@@ -13,6 +13,7 @@ export const getDownloadUrl = async ({
   userId,
   mediaSource,
   maxBitrate,
+  maxHeight,
   audioStreamIndex,
   subtitleStreamIndex,
   deviceId,
@@ -22,6 +23,7 @@ export const getDownloadUrl = async ({
   userId: string;
   mediaSource: MediaSourceInfo;
   maxBitrate: Bitrate;
+  maxHeight?: number;
   audioStreamIndex: number;
   subtitleStreamIndex: number;
   deviceId: string;
@@ -42,7 +44,10 @@ export const getDownloadUrl = async ({
     deviceProfile: generateDeviceProfile(),
   });
 
-  if (maxBitrate.key === "Max" && !streamDetails?.mediaSource?.TranscodingUrl) {
+  // If maxHeight is specified, we need to transcode regardless of bitrate setting
+  const needsTranscode = maxHeight !== undefined || maxBitrate.key !== "Max";
+
+  if (!needsTranscode && !streamDetails?.mediaSource?.TranscodingUrl) {
     console.log("Downloading item directly");
     return {
       url: `${api.basePath}/Items/${item.Id}/Download?api_key=${api.accessToken}`,
@@ -57,6 +62,7 @@ export const getDownloadUrl = async ({
     mediaSourceId: mediaSource.Id,
     deviceId,
     maxStreamingBitrate: maxBitrate.value,
+    maxHeight,
     audioStreamIndex,
     subtitleStreamIndex,
   });

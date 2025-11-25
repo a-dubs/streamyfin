@@ -30,11 +30,17 @@ import { Text } from "./common/Text";
 import { Loader } from "./Loader";
 import { MediaSourceSelector } from "./MediaSourceSelector";
 import ProgressCircle from "./ProgressCircle";
+import {
+  RESOLUTIONS,
+  type Resolution,
+  ResolutionSelector,
+} from "./ResolutionSelector";
 import { RoundButton } from "./RoundButton";
 import { SubtitleTrackSelector } from "./SubtitleTrackSelector";
 
 export type SelectedOptions = {
   bitrate: Bitrate;
+  resolution: Resolution;
   mediaSource: MediaSourceInfo | undefined;
   audioIndex: number | undefined;
   subtitleIndex: number;
@@ -109,6 +115,7 @@ export const DownloadItems: React.FC<DownloadProps> = ({
   useEffect(() => {
     setSelectedOptions(() => ({
       bitrate: defaultBitrate,
+      resolution: RESOLUTIONS[0], // Default to "Max" resolution
       mediaSource: defaultMediaSource,
       subtitleIndex: defaultSubtitleIndex ?? -1,
       audioIndex: defaultAudioIndex,
@@ -208,6 +215,7 @@ export const DownloadItems: React.FC<DownloadProps> = ({
           audioStreamIndex: audioIndex ?? -1,
           subtitleStreamIndex: subtitleIndex ?? -1,
           maxBitrate: selectedOptions?.bitrate || defaultBitrate,
+          maxHeight: selectedOptions?.resolution?.value,
           deviceId: api.deviceInfo.id,
         });
 
@@ -368,7 +376,7 @@ export const DownloadItems: React.FC<DownloadProps> = ({
               </Text>
             </View>
             <View className='flex flex-col space-y-2 w-full'>
-              <View className='items-start'>
+              <View className='flex flex-row space-x-2 items-start'>
                 <BitrateSelector
                   inverted
                   onChange={(val) =>
@@ -377,6 +385,15 @@ export const DownloadItems: React.FC<DownloadProps> = ({
                     )
                   }
                   selected={selectedOptions?.bitrate}
+                />
+                <ResolutionSelector
+                  inverted
+                  onChange={(val) =>
+                    setSelectedOptions(
+                      (prev) => prev && { ...prev, resolution: val },
+                    )
+                  }
+                  selected={selectedOptions?.resolution}
                 />
               </View>
               {itemsNotDownloaded.length > 1 && (

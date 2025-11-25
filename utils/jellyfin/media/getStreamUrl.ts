@@ -5,7 +5,7 @@ import type {
 } from "@jellyfin/sdk/lib/generated-client/models";
 import { BaseItemKind } from "@jellyfin/sdk/lib/generated-client/models/base-item-kind";
 import { getMediaInfoApi } from "@jellyfin/sdk/lib/utils/api";
-import download from "@/utils/profiles/download";
+import { generateDownloadProfile } from "@/utils/profiles/download";
 
 interface StreamResult {
   url: string;
@@ -261,6 +261,7 @@ export const getDownloadStreamUrl = async ({
   item,
   userId,
   maxStreamingBitrate,
+  maxHeight,
   audioStreamIndex = 0,
   subtitleStreamIndex = undefined,
   mediaSourceId,
@@ -270,6 +271,7 @@ export const getDownloadStreamUrl = async ({
   item: BaseItemDto | null | undefined;
   userId: string | null | undefined;
   maxStreamingBitrate?: number;
+  maxHeight?: number;
   audioStreamIndex?: number;
   subtitleStreamIndex?: number;
   mediaSourceId?: string | null;
@@ -284,6 +286,9 @@ export const getDownloadStreamUrl = async ({
     return null;
   }
 
+  // Use the download profile with maxHeight if specified
+  const deviceProfile = generateDownloadProfile({ maxHeight });
+
   const res = await getMediaInfoApi(api).getPlaybackInfo(
     {
       itemId: item.Id!,
@@ -292,7 +297,7 @@ export const getDownloadStreamUrl = async ({
       method: "POST",
       data: {
         userId,
-        deviceProfile: download,
+        deviceProfile,
         subtitleStreamIndex,
         startTimeTicks: 0,
         isPlayback: true,
