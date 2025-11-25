@@ -70,7 +70,7 @@ export const generateDownloadProfile = ({ maxHeight } = {}) => {
       },
     ],
     SubtitleProfiles: [
-      // Official foramts
+      // Official formats
       { Format: "vtt", Method: "Encode" },
 
       { Format: "webvtt", Method: "Encode" },

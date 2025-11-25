@@ -73,7 +73,7 @@ export const ResolutionSelector: React.FC<Props> = ({
           type: "radio" as const,
           label: resolution.key,
           value: resolution,
-          selected: resolution.value === selected?.value,
+          selected: resolution.key === selected?.key,
           onPress: () => onChange(resolution),
         })),
       },
@@ -99,7 +99,7 @@ export const ResolutionSelector: React.FC<Props> = ({
         onPress={() => setOpen(true)}
       >
         <Text numberOfLines={1}>
-          {RESOLUTIONS.find((r) => r.value === selected?.value)?.key}
+          {RESOLUTIONS.find((r) => r.key === selected?.key)?.key}
         </Text>
       </TouchableOpacity>
     </View>
